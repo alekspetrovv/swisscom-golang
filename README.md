@@ -90,5 +90,16 @@ The Bash script provides a convenient way to run the Go program with default or 
 
 You can also run the Go program directly and pass command-line flags to it.
 
+
+
+## Key Design Notes
+
+This client was developed with these core principles and Go features in mind:
+
+* **Concurrency:** Uses goroutines for parallel HTTP requests within each step, with `sync.WaitGroup` to ensure batch synchronization (step-by-step execution). A buffered channel is used for collecting results from goroutines non-blocking.
+* **HTTP Handling:** Uses the standard `net/http` package. `defer resp.Body.Close()` is consistently applied to manage HTTP response bodies for connection reuse (Keep-Alive) and preventing resource leaks.
+* **Configuration & Output:** Key parameters (`-parallel`, `-steps`, `-url`) are configurable via command-line flags. The client provides a summary on the console and exports detailed per-request metrics to a CSV file (`request_results.csv`) for analysis.
+* **Simplicity & Portability:** Built entirely using Go's standard library, meaning no external dependencies are required, which simplifies building and running the client.
+* **Execution Helper:** A `run_client.sh` Bash script is included for convenient execution and parameter management.
+
 ```bash
-go run http_client.go -parallel <parallel_tasks> -steps <steps> -url <url> 
